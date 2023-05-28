@@ -1,4 +1,4 @@
-use crate::db_models::Task;
+use crate::models::Task;
 use crate::utils::DbActor;
 use crate::insertable::NewTask;
 use crate::messages::{CreateTask, FetchTasks};

@@ -1,4 +1,4 @@
-use crate::db_models::User;
+use crate::models::User;
 use crate::utils::DbActor;
 use crate::insertable::NewUser;
 use crate::messages::{CreateUser, FetchUsers};
