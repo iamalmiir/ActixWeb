@@ -1,4 +1,4 @@
-use crate::db_models::{Task, User};
+use crate::models::{Task, User};
 use actix::Message;
 use diesel::QueryResult;
 use uuid::Uuid;

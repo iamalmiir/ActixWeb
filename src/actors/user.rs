@@ -1,5 +1,5 @@
 use crate::db_models::User;
-use crate::db_utils::DbActor;
+use crate::utils::DbActor;
 use crate::insertable::NewUser;
 use crate::messages::{CreateUser, FetchUsers};
 use crate::schema::users::dsl::*;

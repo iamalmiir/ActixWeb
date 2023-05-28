@@ -1,5 +1,5 @@
 use crate::db_models::Task;
-use crate::db_utils::DbActor;
+use crate::utils::DbActor;
 use crate::insertable::NewTask;
 use crate::messages::{CreateTask, FetchTasks};
 use crate::schema::tasks::dsl::*;
