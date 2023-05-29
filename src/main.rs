@@ -1,13 +1,13 @@
 use actix::SyncArbiter;
-use actix_web::{App, HttpServer, web::Data};
+use actix_web::{web::Data, App, HttpServer};
 use config::{Config, File, FileFormat};
 use diesel::{
-    PgConnection,
     r2d2::{ConnectionManager, Pool},
+    PgConnection,
 };
 
 use services::{create_task, create_user, fetch_tasks, fetch_users};
-use utils::{AppState, DbActor, get_pool};
+use utils::{get_pool, AppState, DbActor};
 
 mod actors {
     pub mod task;
@@ -23,10 +23,16 @@ mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = Config::builder().add_source(File::new("config.toml", FileFormat::Toml))
-        .build().expect("Failed to build config");
+    let config = Config::builder()
+        .add_source(File::new("config.toml", FileFormat::Toml))
+        .build()
+        .expect("Failed to build config");
 
-    let pool: Pool<ConnectionManager<PgConnection>> = get_pool(&config.get_string("database.url").expect("Failed to get database url"));
+    let pool: Pool<ConnectionManager<PgConnection>> = get_pool(
+        &config
+            .get_string("database.url")
+            .expect("Failed to get database url"),
+    );
     let db_addr: actix::Addr<DbActor> = SyncArbiter::start(5, move || DbActor(pool.clone()));
     HttpServer::new(move || {
         App::new()
@@ -38,10 +44,10 @@ async fn main() -> std::io::Result<()> {
             .service(fetch_users)
             .service(create_user)
     })
-        .bind((
-            config.get_string("server.host").expect("Host not set."),
-            config.get_int("server.port").expect("Port not set.") as u16)
-        )?
-        .run()
-        .await
+    .bind((
+        config.get_string("server.host").expect("Host not set."),
+        config.get_int("server.port").expect("Port not set.") as u16,
+    ))?
+    .run()
+    .await
 }
