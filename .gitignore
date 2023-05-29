@@ -1,3 +1,4 @@
 /target
 /migrations
-.env
+Cargo.lock
+config.toml

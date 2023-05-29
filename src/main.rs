@@ -1,33 +1,33 @@
 use actix::SyncArbiter;
-use actix_web::{web::Data, App, HttpServer};
+use actix_web::{App, HttpServer, web::Data};
+use config::{Config, File, FileFormat};
 use diesel::{
-    r2d2::{ConnectionManager, Pool},
     PgConnection,
+    r2d2::{ConnectionManager, Pool},
 };
-use dotenv::dotenv;
-use std::env;
+
+use services::{create_task, create_user, fetch_tasks, fetch_users};
+use utils::{AppState, DbActor, get_pool};
 
 mod actors {
     pub mod task;
     pub mod user;
 }
-mod utils;
+
 mod insertable;
 mod messages;
 mod models;
 mod schema;
 mod services;
-
-use utils::{get_pool, AppState, DbActor};
-use services::{create_task, create_user, fetch_tasks, fetch_users};
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
-    let db_url: String = env::var("DATABASE_URL").expect("DATABASE_URL must be set to continue.");
-    let pool: Pool<ConnectionManager<PgConnection>> = get_pool(&db_url);
-    let db_addr = SyncArbiter::start(5, move || DbActor(pool.clone()));
+    let config = Config::builder().add_source(File::new("config.toml", FileFormat::Toml))
+        .build().expect("Failed to build config");
 
+    let pool: Pool<ConnectionManager<PgConnection>> = get_pool(&config.get_string("database.url").expect("Failed to get database url"));
+    let db_addr: actix::Addr<DbActor> = SyncArbiter::start(5, move || DbActor(pool.clone()));
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(AppState {
@@ -38,7 +38,10 @@ async fn main() -> std::io::Result<()> {
             .service(fetch_users)
             .service(create_user)
     })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
+        .bind((
+            config.get_string("server.host").expect("Host not set."),
+            config.get_int("server.port").expect("Port not set.") as u16)
+        )?
+        .run()
+        .await
 }
