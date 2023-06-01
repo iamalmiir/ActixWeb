@@ -5,6 +5,8 @@ use diesel::{
     r2d2::{ConnectionManager, Pool},
     PgConnection,
 };
+use env_logger::Env;
+use log::LevelFilter;
 
 use services::{create_task, create_user, fetch_tasks, fetch_users};
 use utils::{get_pool, AppState, DbActor};
@@ -23,6 +25,10 @@ mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info"))
+        .filter_level(LevelFilter::Info)
+        .init();
+
     let config = Config::builder()
         .add_source(File::new("config.toml", FileFormat::Toml))
         .build()

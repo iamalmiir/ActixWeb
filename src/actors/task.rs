@@ -1,8 +1,8 @@
-use crate::models::Task;
-use crate::utils::DbActor;
 use crate::insertable::NewTask;
 use crate::messages::{CreateTask, FetchTasks};
+use crate::models::Task;
 use crate::schema::tasks::dsl::*;
+use crate::utils::DbActor;
 use actix::Handler;
 use diesel::{self, prelude::*};
 use uuid::Uuid;

@@ -1,16 +1,16 @@
+use actix::Addr;
 use actix_web::{
-    get, post,
+    get, post, put,
     web::{Data, Json},
     HttpResponse, Responder,
 };
+use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::{
     messages::{CreateTask, CreateUser, FetchTasks, FetchUsers},
     AppState, DbActor,
 };
-use actix::Addr;
-use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct CreateUserBody {
@@ -33,6 +33,8 @@ pub struct CreateTaskBody {
 pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
     let db: Addr<DbActor> = state.as_ref().db.clone();
 
+    // log state
+    log::info!("db: {db:?}");
     match db.send(FetchUsers).await {
         Ok(Ok(info)) => HttpResponse::Ok().json(info),
         Ok(Err(_)) => HttpResponse::NotFound().json("No users found"),
@@ -86,4 +88,10 @@ pub async fn create_task(state: Data<AppState>, body: Json<CreateTaskBody>) -> i
         Ok(Ok(info)) => HttpResponse::Ok().json(info),
         _ => HttpResponse::InternalServerError().json("Failed to create task"),
     }
+}
+
+#[put["/tasks"]]
+pub async fn update_task() -> impl Responder {
+    log::info!("PUT request: /tasks");
+    HttpResponse::Ok().json("Ok")
 }

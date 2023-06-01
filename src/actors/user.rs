@@ -1,8 +1,8 @@
-use crate::models::User;
-use crate::utils::DbActor;
-use crate::insertable::NewUser;
+use crate::insertable::{NewUser, UpdateUser};
 use crate::messages::{CreateUser, FetchUsers};
+use crate::models::User;
 use crate::schema::users::dsl::*;
+use crate::utils::DbActor;
 use actix::Handler;
 use diesel::{self, prelude::*};
 use uuid::Uuid;

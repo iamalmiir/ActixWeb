@@ -18,6 +18,15 @@ pub struct CreateUser {
 }
 
 #[derive(Message)]
+#[rtype(result = "QueryResult<User>")]
+pub struct UpdateUser {
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub username: Option<String>,
+    pub email: Option<String>,
+}
+
+#[derive(Message)]
 #[rtype(result = "QueryResult<Vec<Task>>")]
 pub struct FetchTasks;
 

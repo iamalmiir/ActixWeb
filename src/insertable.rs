@@ -23,3 +23,12 @@ pub struct NewTask {
     pub description: String,
     pub completed: bool,
 }
+
+#[derive(Insertable, Serialize, Clone)]
+#[diesel(table_name=users)]
+pub struct UpdateUser {
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub username: Option<String>,
+    pub email: Option<String>,
+}
